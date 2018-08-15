@@ -10,7 +10,6 @@ var app = express();
 app.use(bodyParser.json());
 
 app.post('/todos', (req, res) => {
-    console.log(req.body)
     let toDo = new Todo({
         text: req.body.text,
     });
