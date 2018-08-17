@@ -102,5 +102,37 @@ describe('GET /todos/:id', () => {
             .get('/todos/5b739701bdca5405539de114')
             .expect(404)
             .end(done);
-    })
+    });
+});
+
+describe('DELETE TODO by ID', () => {
+    it('Should return a 200 with one todo deleted', (done) => {
+    request(app)
+        .delete(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200)
+        .expect( (res) => {
+            expect(res.body.todo.text).toBe(todos[0].text);
+        })
+        .end(done);
+    });
+
+    it('Should return 404 with Invalid ID message', (done) => {
+        request(app)
+            .delete('/todos/123')
+            .expect(404)
+            .expect( (res) => {
+                expect(res.body.error).toBe('Invalid ID');
+            })
+            .end(done);
+    });
+
+    it('Should return 400 with ID does not exist error message', (done) => {
+        request(app)
+            .delete('/todos/6b74edbe501df403da5062d0')
+            .expect(404)
+            .expect( (res) => {
+                expect(res.body.error).toBe('ID does not exist');
+            })
+            .end(done);
+    });
 });
