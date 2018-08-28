@@ -48,14 +48,27 @@ UserScehma.methods.generateAuthToken = function () {
         access,
         token
     });
-    // user.tokens = user.tokens.concat([{
-    //     access,
-    //     tokens
-    // }]);
 
     return user.save().then(() => {
         return token;
     })
+}
+
+UserScehma.statics.findByToken = function (token) {
+    let User = this;
+    let decoded = undefined;
+
+    try {
+        decoded = jwt.verify(token, 'abc123');
+    } catch(e) {
+        return Promise.reject();
+    }
+
+    return User.findOne({
+        '_id': decoded._id,
+        'tokens.token': token,
+        'tokens.access': 'auth'
+    });
 }
 
 let User = mongoose.model('Users',UserScehma);
