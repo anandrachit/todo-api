@@ -72,6 +72,29 @@ UserScehma.statics.findByToken = function (token) {
     });
 }
 
+UserScehma.statics.findByCredentials = function (email, password) {
+    let User = this;
+
+    return User.findOne({email}).then((user) => {
+        if(!user){
+            return Promise.reject();
+        }
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (err, result) => {
+                if(err){
+                    reject();
+                }
+                if(!result){
+                    reject();
+                }
+                resolve(user);
+            })
+        })
+    })
+
+};
+
+
 UserScehma.pre ('save', function (next) {
     let user = this;
 
