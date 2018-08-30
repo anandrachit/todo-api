@@ -121,9 +121,6 @@ describe('DELETE TODO by ID', () => {
         request(app)
             .delete('/todos/6b74edbe501df403da5062d0')
             .expect(404)
-            .expect( (res) => {
-                expect(res.body.error).toBe('ID does not exist');
-            })
             .end(done);
     });
 });
@@ -235,4 +232,42 @@ describe('DELETE TODO by ID', () => {
                 .expect(400)
                 .end(done);
         });
+    });
+
+describe('POST /users/login', () => {
+    it('Should login user and return auth token', (done) => {
+        console.log('Running for user : ',users[0].email);
+        request(app)
+            .post('/users/login')
+            .send({
+                email: users[0].email,
+                password: users[0].password
+            })
+            .expect(200)
+            .expect(res => {
+                expect(res.headers['x-auth']).toBeTruthy();
+                expect(res.body._id).toBe(users[0]._id.toHexString());
+                expect(res.body.email).toBe(users[0].email);
+                })
+            .end(done);
+    });
+
+    it('Should not login user with invalid credentials', (done) => {
+        request(app)
+            .post('/users/login')
+            .send({
+                email: users[1].email,
+                password: 'crazyPassword'
+            })
+            .expect(400)
+            .end((err, res) => {
+                if(err){
+                    return done(err);
+                }
+                User.findById(users[0]._id).then((user) => {
+                    expect(user.tokens.length).toBe(1);
+                }).catch( e=> done(e));
+                done();
+            });
     })
+});
