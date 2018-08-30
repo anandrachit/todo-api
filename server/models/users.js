@@ -55,6 +55,16 @@ UserScehma.methods.generateAuthToken = function () {
     })
 }
 
+UserScehma.methods.removeToken = function(token) {
+    let user = this;
+
+    return user.update({
+        $pull: {
+            tokens: {token}
+        }
+    });
+};
+
 UserScehma.statics.findByToken = function (token) {
     let User = this;
     let decoded = undefined;
