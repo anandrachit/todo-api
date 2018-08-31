@@ -43,7 +43,7 @@ UserScehma.methods.toJSON = function () {
 UserScehma.methods.generateAuthToken = function () {
     let user = this;
     let access = 'auth';
-    let token = jwt.sign({_id: user._id.toHexString(), access},'abc123').toString();
+    let token = jwt.sign({_id: user._id.toHexString(), access},process.env.JWT_SECRET).toString();
 
     user.tokens.push({
         access,
@@ -70,7 +70,7 @@ UserScehma.statics.findByToken = function (token) {
     let decoded = undefined;
 
     try {
-        decoded = jwt.verify(token, 'abc123');
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
     } catch(e) {
         return Promise.reject();
     }
